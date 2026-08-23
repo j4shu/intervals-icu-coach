@@ -25,12 +25,11 @@ Each report is written to `days/<date>.md` and sent to Telegram.
 
 ## Configuration
 
-`bin/analyze-day` sources `~/.config/icuvisor-coach/env` (override the path with
-`COACH_ENV`). Create it mode 600:
+`bin/analyze-day` sources `.env` in the repo root, which is gitignored (override the
+path with `COACH_ENV`). Create it mode 600:
 
 ```
-mkdir -p ~/.config/icuvisor-coach
-chmod 600 ~/.config/icuvisor-coach/env
+touch .env && chmod 600 .env
 ```
 
 ```
@@ -45,7 +44,9 @@ failed send warns on stderr but does not fail the run, since the report is alrea
 disk.
 
 The file is read by the script rather than the shell, so it works the same from a
-terminal, launchd, or cron.
+terminal, launchd, or cron. It is ignored by git, but it holds live credentials: do not
+force-add it, and note that git worktrees do not inherit it, so a worktree run needs its
+own copy or `COACH_ENV` pointed at the main checkout.
 
 For the Telegram values, create a bot with [@BotFather](https://t.me/BotFather), send it
 a message, then read your chat id from `https://api.telegram.org/bot<TOKEN>/getUpdates`.

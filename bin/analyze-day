@@ -10,7 +10,7 @@ DATE=${1:-}
 die() { print -u2 "analyze-day: $1"; exit "${2:-1}" }
 
 # Credentials: athlete id for the icuvisor MCP server, telegram for the report send.
-ENV_FILE=${COACH_ENV:-$HOME/.config/icuvisor-coach/env}
+ENV_FILE=${COACH_ENV:-$REPO/.env}
 if [[ -f $ENV_FILE ]]; then
   source $ENV_FILE
 fi
