@@ -33,6 +33,7 @@ Repository layout:
   - `bin/upload-ride` - Uploads the newest TrainerDay `.tcx` via `~/git/trainerday-to-garmin`.
   - `bin/analyze-day` - Rebuilds `~/git/icuvisor` at its newest release, then runs
     `/analyze-day` for a date. The skill writes `days/<date>.md`; the script verifies it landed.
+  - `bin/post-ride` - Runs `upload-ride` then `analyze-day`, for indoor ride days.
 - Claude files
   - `.claude/skills/analyze-day/` - the analysis skill. `SKILL.md` spawns the analyst
     subagent, synthesizes its findings, and writes `days/<date>.md`, returning only the
