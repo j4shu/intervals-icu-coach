@@ -4,13 +4,7 @@ Post-workout automation for triathlon training to get an AI analysis of the day.
 
 ## Usage
 
-After an indoor ride, run both steps at once:
-
-```
-bin/post-ride  # upload-ride, then analyze-day
-```
-
-Or run the upload on its own:
+After an indoor ride, first run `bin/analyze-day` to upload the activity to intervals.icu:
 
 ```
 bin/upload-ride  # TrainerDay -> Garmin -> intervals.icu
