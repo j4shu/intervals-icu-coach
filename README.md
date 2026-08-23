@@ -23,19 +23,29 @@ Each report is written to `days/<date>.md` and sent to Telegram.
 
 `claude`, [`icuvisor`](https://github.com/ricardocabral/icuvisor), [`trainer-day-to-garmin`](https://github.com/j4shu/trainerday-to-garmin)
 
-## Telegram
+## Configuration
 
-`bin/analyze-day` sends the finished report to a Telegram bot. Create one with
-[@BotFather](https://t.me/BotFather), send it a message, then read your chat id from
-`https://api.telegram.org/bot<TOKEN>/getUpdates` and export both values:
+`bin/analyze-day` sources `~/.config/icuvisor-coach/env` (override the path with
+`COACH_ENV`). Create it mode 600:
 
 ```
+mkdir -p ~/.config/icuvisor-coach
+chmod 600 ~/.config/icuvisor-coach/env
+```
+
+```
+export INTERVALS_ICU_ATHLETE_ID='...'
 export TELEGRAM_BOT_TOKEN='...'
 export TELEGRAM_CHAT_ID='...'
 ```
 
-These live in `~/.zshrc`, which only interactive shells source. Move them to a file the
-script sources directly if you ever run `analyze-day` from launchd or cron.
+`INTERVALS_ICU_ATHLETE_ID` reaches the icuvisor MCP server through `.mcp.json` and is
+required. The Telegram values are optional: without them the send is skipped, and a
+failed send warns on stderr but does not fail the run, since the report is already on
+disk.
 
-Without the variables the send is skipped. A failed send warns on stderr but does not
-fail the run, since the report is already on disk.
+The file is read by the script rather than the shell, so it works the same from a
+terminal, launchd, or cron.
+
+For the Telegram values, create a bot with [@BotFather](https://t.me/BotFather), send it
+a message, then read your chat id from `https://api.telegram.org/bot<TOKEN>/getUpdates`.

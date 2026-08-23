@@ -33,9 +33,10 @@ Repository layout:
   - `bin/upload-ride` - Uploads the newest TrainerDay `.tcx` via `~/git/trainerday-to-garmin`.
   - `bin/analyze-day` - Rebuilds `~/git/icuvisor` at its newest release, then runs
     `/analyze-day` for a date. The skill writes `days/<date>.md`; the script verifies it
-    landed, then sends it to Telegram as a document. Requires `TELEGRAM_BOT_TOKEN` and
-    `TELEGRAM_CHAT_ID` in the environment; without them the send is skipped, and a failed
-    send warns but does not fail the run.
+    landed, then sends it to Telegram as a document. Sources credentials from
+    `~/.config/icuvisor-coach/env` (override with `COACH_ENV`): `INTERVALS_ICU_ATHLETE_ID`
+    is required and the script dies without it, while missing `TELEGRAM_BOT_TOKEN` or
+    `TELEGRAM_CHAT_ID` only skips the send. A failed send warns but does not fail the run.
   - `bin/post-ride` - Runs `upload-ride` then `analyze-day`, for indoor ride days.
 - Claude files
   - `.claude/skills/analyze-day/` - the analysis skill. `SKILL.md` spawns the analyst
