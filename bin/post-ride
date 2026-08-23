@@ -1,0 +1,14 @@
+#!/bin/zsh
+# Upload the newest TrainerDay ride, then analyze the day it landed on.
+#
+# Usage: bin/post-ride [YYYY-MM-DD]
+#
+# For indoor ride days, when you want the analysis right after the upload.
+# Either step failing stops the run; re-running is safe.
+
+set -euo pipefail
+
+BIN=${0:A:h}
+
+$BIN/upload-ride
+$BIN/analyze-day "$@"
