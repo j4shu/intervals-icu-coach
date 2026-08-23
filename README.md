@@ -8,7 +8,6 @@ After an indoor ride, first run `bin/analyze-day` to upload the activity to inte
 
 ```
 bin/upload-ride  # TrainerDay -> Garmin -> intervals.icu
-
 ```
 
 For any other activity (run, swim, outdoor ride) Garmin already has the data,
@@ -20,5 +19,4 @@ bin/analyze-day
 
 ## Requirements
 
-`uv`, `jq`, `gh`, `claude`, and `icuvisor`.
-The intervals.icu API key lives in `~/git/trainerday-to-garmin/.env`.
+`claude`, [`icuvisor`](https://github.com/ricardocabral/icuvisor), [`trainer-day-to-garmin`](https://github.com/j4shu/trainerday-to-garmin)
