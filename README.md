@@ -21,7 +21,7 @@ Each report is written to `days/<date>.md` and sent to Telegram.
 
 ## Requirements
 
-`claude`, [`icuvisor`](https://github.com/ricardocabral/icuvisor), [`trainer-day-to-garmin`](https://github.com/j4shu/trainerday-to-garmin), Telegram
+`claude`, `uv`, [`icuvisor`](https://github.com/ricardocabral/icuvisor), [`trainer-day-to-garmin`](https://github.com/j4shu/trainerday-to-garmin), Telegram
 
 ## Configuration
 
