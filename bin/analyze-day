@@ -5,6 +5,7 @@
 set -euo pipefail
 
 REPO=${0:A:h:h}
+BIN=${0:A:h}
 DATE=${1:-}
 
 die() { print -u2 "analyze-day: $1"; exit "${2:-1}" }
@@ -54,57 +55,5 @@ REPORT=$(grep -oE 'days/[0-9]{4}-[0-9]{2}-[0-9]{2}\.md' <<<$RESULT | tail -1) ||
 [[ -s $REPO/$REPORT ]] || die "claimed $REPORT but the file is missing or empty"
 print "analyze-day: wrote $REPORT"
 
-# Step 3: Send the report to Telegram with telegramify-markdown
-WORK=$(mktemp -d)
-trap "rm -rf $WORK" EXIT
-
-uv run --quiet --no-project --with telegramify-markdown==1.2.0 \
-  python - $REPO/$REPORT $WORK <<'PY' || die "markdown conversion failed"
-import asyncio, json, pathlib, sys
-import telegramify_markdown as t
-from telegramify_markdown.config import get_runtime_config
-
-# Headings are prefixed with emoji by default.
-sym = get_runtime_config().markdown_symbol
-for lvl in range(1, 7):
-    setattr(sym, f"heading_level_{lvl}", "")
-
-src = pathlib.Path(sys.argv[1]).read_text()
-out = pathlib.Path(sys.argv[2])
-
-async def main():
-    boxes = await t.telegramify(src, max_message_length=4096, render_mermaid=False)
-    n = 0
-    for b in boxes:
-        if not isinstance(b, t.Text):
-            continue
-        out.joinpath(f"{n:03d}.txt").write_text(b.text)
-        out.joinpath(f"{n:03d}.json").write_text(json.dumps([e.to_dict() for e in b.entities]))
-        n += 1
-    if n == 0:
-        sys.exit("conversion produced no text")
-
-asyncio.run(main())
-PY
-
-# Sending text plus entities sidesteps parse_mode escaping entirely
-for chunk in $WORK/*.txt(N); do
-  if curl -sf --max-time 30 -X POST \
-      "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-      --data-urlencode chat_id=$TELEGRAM_CHAT_ID \
-      --data-urlencode text@$chunk \
-      --data-urlencode entities@${chunk:r}.json >/dev/null; then
-    print "analyze-day: sent ${chunk:t} to telegram"
-  else
-    print -u2 "analyze-day: telegram send failed for ${chunk:t}"
-  fi
-done
-
-# Send the markdown file as a separate message
-if curl -sf --max-time 30 -X POST \
-    "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument" \
-    -F chat_id=$TELEGRAM_CHAT_ID -F document=@$REPO/$REPORT >/dev/null; then
-  print "analyze-day: sent $REPORT to telegram"
-else
-  print -u2 "analyze-day: telegram send failed for $REPORT"
-fi
+# Step 3: Send the report to Telegram
+$BIN/send-telegram $REPO/$REPORT

@@ -1,0 +1,76 @@
+#!/bin/zsh
+# Send a day report to Telegram: the markdown as chunked messages, then the file itself.
+# Usage: bin/send-telegram <file.md>
+
+set -euo pipefail
+
+REPO=${0:A:h:h}
+REPORT=${1:-}
+
+die() { print -u2 "send-telegram: $1"; exit "${2:-1}" }
+
+[[ -n $REPORT ]] || die "usage: send-telegram <file.md>"
+REPORT=${REPORT:A}
+[[ -s $REPORT ]] || die "missing or empty file: $REPORT"
+
+ENV_FILE=$REPO/.env
+[[ -f $ENV_FILE ]] || die "missing $ENV_FILE"
+source $ENV_FILE
+for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
+  [[ -n ${(P)var:-} ]] || die "$var unset in $ENV_FILE"
+done
+
+# Convert the report into Telegram-sized messages with telegramify-markdown
+WORK=$(mktemp -d)
+trap "rm -rf $WORK" EXIT
+
+uv run --quiet --no-project --with telegramify-markdown==1.2.0 \
+  python - $REPORT $WORK <<'PY' || die "markdown conversion failed"
+import asyncio, json, pathlib, sys
+import telegramify_markdown as t
+from telegramify_markdown.config import get_runtime_config
+
+# Headings are prefixed with emoji by default.
+sym = get_runtime_config().markdown_symbol
+for lvl in range(1, 7):
+    setattr(sym, f"heading_level_{lvl}", "")
+
+src = pathlib.Path(sys.argv[1]).read_text()
+out = pathlib.Path(sys.argv[2])
+
+async def main():
+    boxes = await t.telegramify(src, max_message_length=4096, render_mermaid=False)
+    n = 0
+    for b in boxes:
+        if not isinstance(b, t.Text):
+            continue
+        out.joinpath(f"{n:03d}.txt").write_text(b.text)
+        out.joinpath(f"{n:03d}.json").write_text(json.dumps([e.to_dict() for e in b.entities]))
+        n += 1
+    if n == 0:
+        sys.exit("conversion produced no text")
+
+asyncio.run(main())
+PY
+
+# Sending text plus entities sidesteps parse_mode escaping entirely
+for chunk in $WORK/*.txt(N); do
+  if curl -sf --max-time 30 -X POST \
+      "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+      --data-urlencode chat_id=$TELEGRAM_CHAT_ID \
+      --data-urlencode text@$chunk \
+      --data-urlencode entities@${chunk:r}.json >/dev/null; then
+    print "send-telegram: sent ${chunk:t}"
+  else
+    print -u2 "send-telegram: send failed for ${chunk:t}"
+  fi
+done
+
+# Send the markdown file as a separate message
+if curl -sf --max-time 30 -X POST \
+    "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument" \
+    -F chat_id=$TELEGRAM_CHAT_ID -F document=@$REPORT >/dev/null; then
+  print "send-telegram: sent ${REPORT:t}"
+else
+  print -u2 "send-telegram: send failed for ${REPORT:t}"
+fi
