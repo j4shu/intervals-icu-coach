@@ -1,6 +1,3 @@
 .claude/worktrees/
 days/
-
-# Credentials, sourced by bin/analyze-day. Never commit these.
 .env
-*.env
