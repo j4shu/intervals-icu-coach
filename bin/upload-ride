@@ -1,10 +1,6 @@
 #!/bin/zsh
 # Upload the newest TrainerDay ride to Garmin, which syncs on to intervals.icu.
-#
 # Usage: bin/upload-ride
-#
-# Run this by hand after finishing an indoor ride, once.
-# Exit codes: 75 Garmin auth, 77 TrainerDay folder unreadable, 1 otherwise.
 
 set -euo pipefail
 
