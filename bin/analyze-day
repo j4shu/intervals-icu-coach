@@ -103,3 +103,13 @@ for chunk in $WORK/*.txt(N); do
     print -u2 "analyze-day: telegram send failed for ${chunk:t}"
   fi
 done
+
+# A file cannot ride along with a text message, and a document caption caps at
+# 1024 chars, so the source markdown follows as its own message.
+if curl -sf --max-time 30 -X POST \
+    "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument" \
+    -F chat_id=$TELEGRAM_CHAT_ID -F document=@$REPO/$REPORT >/dev/null; then
+  print "analyze-day: sent $REPORT to telegram"
+else
+  print -u2 "analyze-day: telegram send failed for $REPORT"
+fi
