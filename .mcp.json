@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "icuvisor": {
+      "command": "/Users/jshu/git/icuvisor/bin/icuvisor",
+      "args": [],
+      "env": {
+        "INTERVALS_ICU_ATHLETE_ID": "${INTERVALS_ICU_ATHLETE_ID}",
+        "ICUVISOR_TIMEZONE": "America/New_York",
+        "ICUVISOR_TOOLSET": "full",
+        "ICUVISOR_DELETE_MODE": "none"
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+#!/bin/zsh
+# Upload the newest TrainerDay ride to Garmin, which syncs on to intervals.icu.
+#
+# Usage: bin/upload-ride
+#
+# Run this by hand after finishing an indoor ride, once.
+# Exit codes: 75 Garmin auth, 77 TrainerDay folder unreadable, 1 otherwise.
+
+set -euo pipefail
+
+UPLOADER=~/git/trainerday-to-garmin
+
+die() { print -u2 "upload-ride: $1"; exit "${2:-1}" }
+
+print "upload-ride: uploading latest TrainerDay activity"
+(cd $UPLOADER && uv run main.py) || die "upload failed (exit $?)" $?
