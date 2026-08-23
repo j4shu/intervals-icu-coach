@@ -47,3 +47,18 @@ REPORT=$(grep -oE 'days/[0-9]{4}-[0-9]{2}-[0-9]{2}\.md' <<<$RESULT | tail -1) ||
 [[ -n $REPORT ]] || die "no report path in output: $RESULT"
 [[ -s $REPO/$REPORT ]] || die "claimed $REPORT but the file is missing or empty"
 print "analyze-day: wrote $REPORT"
+
+# Step 3: Send the report to Telegram
+# Exported from ~/.zshrc, so only interactive shells have them. Missing creds skip
+# the send rather than failing a run whose report already landed.
+if [[ -n ${TELEGRAM_BOT_TOKEN:-} && -n ${TELEGRAM_CHAT_ID:-} ]]; then
+  if curl -sf --max-time 30 -X POST \
+      "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument" \
+      -F chat_id=$TELEGRAM_CHAT_ID -F document=@$REPO/$REPORT >/dev/null; then
+    print "analyze-day: sent $REPORT to telegram"
+  else
+    print -u2 "analyze-day: telegram send failed"
+  fi
+else
+  print -u2 "analyze-day: telegram not configured, skipping"
+fi
