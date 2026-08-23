@@ -44,9 +44,10 @@ The findings are dense on purpose. Compress them to be human-readable.
 - One line per session for swim, bike, and run. Reach for a table only when the day has a
   real comparison in it, such as reps fading across a set or a sport moving against its
   baseline.
-- Everything that is not swim, bike, or run goes in a single trailing "Also" line, however
-  many such sessions there were: sport, duration, load, and nothing else unless the
-  findings flagged something about one. These carry load but do not carry the verdict.
+- Everything that is not swim, bike, or run goes in a single trailing "Other Workouts"
+  line, however many such sessions there were: sport, duration, load, and nothing else
+  unless the findings flagged something about one. These carry load but do not carry
+  the verdict.
 - Every number you keep must appear in the findings. Do not compute, extrapolate, or
   round a missing value into existence. Do not add a metric the findings did not report.
 - Carry the findings' caveats through. If the analyst flagged `insufficient_sample`,
@@ -76,9 +77,9 @@ Done when: the file exists and contains the summary.
 ## Output
 
 The report file: verdict, then wellness, then one section per swim, bike, or run
-session, then the "Also" line. Aim for a screen of text. Markdown headings and short
-lines, tables if necessary. No banners, no emojis, no em dashes. End with one specific
-next action.
+session, then the "Other Workouts" line. Aim for a screen of text. Markdown headings
+and short lines, tables if necessary. No banners, no emojis, no em dashes. End with one
+specific next action.
 
 Your final chat message is not the report. It is exactly this one line:
 
