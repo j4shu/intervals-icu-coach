@@ -15,9 +15,7 @@ die() { print -u2 "analyze-day: $1"; exit "${2:-1}" }
 ENV_FILE=$REPO/.env
 [[ -f $ENV_FILE ]] || die "missing $ENV_FILE"
 source $ENV_FILE
-for var in INTERVALS_ICU_ATHLETE_ID TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
-  [[ -n ${(P)var:-} ]] || die "$var unset in $ENV_FILE"
-done
+[[ -n ${INTERVALS_ICU_ATHLETE_ID:-} ]] || die "INTERVALS_ICU_ATHLETE_ID unset in $ENV_FILE"
 
 # Step 1: Build latest release of icuvisor
 SRC=${ICUVISOR_SRC:-~/git/icuvisor}
