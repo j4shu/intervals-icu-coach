@@ -36,7 +36,6 @@ Repository layout:
     landed, then hands the path to `send-telegram`. Sources credentials from `.env`.
   - `bin/send-telegram` - Takes a markdown file path and sends it to Telegram as a
     document. Sources credentials from `.env`.
-  - `bin/post-ride` - Runs `upload-ride` then `analyze-day`, for indoor ride days.
 - Claude files
   - `.claude/skills/analyze-day/` - the analysis skill. `SKILL.md` spawns the analyst
     subagent, synthesizes its findings, and writes `days/<date>.md`, returning only the
