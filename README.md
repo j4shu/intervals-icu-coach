@@ -14,7 +14,6 @@ Then run `bin/analyze-day` to create the report, which is written to `days/<date
 
 ```
 bin/analyze-day
-
 ```
 
 ## Requirements
