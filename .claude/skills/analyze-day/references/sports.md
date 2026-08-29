@@ -55,6 +55,9 @@ When no paired event exists, say the session was unplanned and skip to progressi
 - `joules_above_ftp_kj` and per-interval `w_prime_balance` show how deep the hard reps
   went and whether recovery between them was real.
 
+Report line tail (see `references/report.md`): NP, IF, average heart rate, surface
+(indoor or outdoor).
+
 Baseline metrics: `training_load`, `if`, `pw_hr`, `aerobic_decoupling_percent`.
 Efforts delta: `effort_family: power`, `duration_seconds: [60, 300, 1200, 3600]`.
 
@@ -82,6 +85,9 @@ Report pace as min/mi, the athlete's preferred unit.
 - Treadmill pace is belt-reported, not GPS. Outdoor runs carry elevation, so check
   `elevation_gain_m` before comparing an outdoor run to a treadmill run on pace alone.
 - `stride_length_m` at a given pace is a mechanics signal worth tracking.
+
+Report line tail (see `references/report.md`): distance, average pace in min/mi, average
+heart rate, surface (outdoor or treadmill).
 
 Baseline metrics: `pace_seconds_per_mile`, `training_load`, `average_heart_rate_bpm`.
 Efforts delta: `effort_family: pace`, `distance_meters: [400, 1000, 1609, 5000]`.
@@ -124,6 +130,9 @@ example `["3x 800y 1:31"]`, already per 100 yards.
 - There is no power, so `pw_hr` reads 0 and decoupling is absent. Say so once rather
   than reporting zeros.
 
+Report line tail (see `references/report.md`): distance in yards, average heart rate, max
+heart rate, surface (pool or open water).
+
 Baseline metrics: `training_load`, `average_speed_mph`. Activity rows carry no swim pace
 field, so the pace signal comes from the curves and the rep splits.
 Efforts delta: `effort_family: pace`, `distance_meters: [50, 100, 200, 400, 1500]`.
@@ -157,6 +166,10 @@ even though each session reads thin.
 
 Grouping in the findings: report all Other-family sessions under a single `OTHER`
 section, one block per session, rather than giving each its own top-level section.
+
+Report line tail (see `references/report.md`): average heart rate when the file carries
+one, nothing otherwise. No surface; the distinction does not mean anything for these
+sports.
 
 Baseline metrics: `training_load`, `moving_time_seconds`, `average_heart_rate_bpm`.
 No efforts delta; these sports have no effort curve.
