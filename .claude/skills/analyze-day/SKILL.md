@@ -36,17 +36,13 @@ Done when: the agent has returned its findings.
 The findings are dense on purpose. Compress them to be human-readable.
 
 - Keep the numbers that carry the verdict. Drop the ones that only confirm it.
-- Read the wellness numbers, do not just report them: HRV and resting heart rate against
-  their 7-day means, sleep duration and quality, and form as TSB with CTL and ATL. Say
-  whether the day's load sat well against the state the athlete was in.
-- Reach for a table only when the session has a real comparison in it, such as reps fading
-  across a set or a sport moving against its baseline.
-- Sessions outside swim, bike, and run carry load but do not carry the verdict. Give each
-  its sport, duration, and load, and nothing else unless the findings flagged something.
+- Read the wellness numbers, do not just report them. Say whether the day's load sat well
+  against the state the athlete was in.
+- Sessions outside swim, bike, and run carry load but do not carry the verdict. Say no
+  more about one than the findings flagged.
 - Every number you keep must appear in the findings. Do not compute, extrapolate, or
   round a missing value into existence. Do not add a metric the findings did not report.
-- Carry the findings' caveats through. If the analyst flagged `insufficient_sample`,
-  auto-lap intervals, or missing data behind a claim, say so rather than dropping it.
+- Carry the findings' caveats through rather than dropping them.
 - No tool citations in the report. The athlete asked how the day went, not where the
   number came from. Name a tool only when the athlete asks for the evidence.
 

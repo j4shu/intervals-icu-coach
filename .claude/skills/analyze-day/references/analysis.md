@@ -78,9 +78,9 @@ For each sport present that day, both halves:
 **N-back table.** The last 3 prior sessions of the same sport family, from the Step 3
 page. Families: `Run` + `VirtualRun` as Run, `Ride` + `VirtualRide` as Bike, `Swim`, and
 every other sport string as Other. Other-family sessions compare N-back on load and
-duration against their own exact sport string, nothing more. Label every row with its surface (outdoor or indoor/treadmill/trainer)
-and its session character. Take the character from the activity `description` when there
-is one, and from the name otherwise. Compare on the metrics that survive a character
+duration against their own exact sport string, nothing more. Label every row with its
+surface, in the vocabulary its family's block names, and its session character. Take the
+character from the activity `description` when there is one, and from the name otherwise. Compare on the metrics that survive a character
 difference rather than on raw pace or raw IF; the sport ladder names them.
 
 **Baseline verdict.** `compute_baseline` and `analyze_trend` over the 90 days before the
