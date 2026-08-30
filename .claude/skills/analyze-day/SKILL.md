@@ -35,51 +35,40 @@ Done when: the agent has returned its findings.
 
 The findings are dense on purpose. Compress them to be human-readable.
 
-- Lead with the verdict: how the day went, in one or two sentences.
 - Keep the numbers that carry the verdict. Drop the ones that only confirm it.
-- Wellness comes next, before the sessions: HRV and resting heart rate against their
-  7-day means, sleep duration and quality, and form as TSB with CTL and ATL.
-  Say what it means for the day, not only what it read: whether the day's
-  load sat well against the state the athlete was in.
-- One line per session for swim, bike, and run. Reach for a table only when the day has a
-  real comparison in it, such as reps fading across a set or a sport moving against its
-  baseline.
-- Everything that is not swim, bike, or run goes in a single trailing "Other Workouts"
-  line, however many such sessions there were: sport, duration, load, and nothing else
-  unless the findings flagged something about one. These carry load but do not carry
-  the verdict.
+- Read the wellness numbers, do not just report them. Say whether the day's load sat well
+  against the state the athlete was in.
+- Sessions outside swim, bike, and run carry load but do not carry the verdict. Say no
+  more about one than the findings flagged.
 - Every number you keep must appear in the findings. Do not compute, extrapolate, or
   round a missing value into existence. Do not add a metric the findings did not report.
-- Carry the findings' caveats through. If the analyst flagged `insufficient_sample`,
-  auto-lap intervals, or missing data behind a claim, say so in a clause rather than
-  dropping it.
-- No tool citations in the summary. The athlete asked how the day went, not where the
+- Carry the findings' caveats through rather than dropping them.
+- No tool citations in the report. The athlete asked how the day went, not where the
   number came from. Name a tool only when the athlete asks for the evidence.
 
-Done when: the summary reads in under a minute and every claim in it traces to the
-findings.
+Done when: every claim you intend to write traces to the findings.
 
 ## Step 3: Write the report
 
-The summary is a file, not a chat message. Its name must come from the same date the
+The report is a file, not a chat message. Its name must come from the same date the
 analysis covers, so resolve the date before naming it.
 
 - If the argument was a `YYYY-MM-DD`, that is the date.
 - If it was omitted, call `resolve_calendar_dates` with offset 0 and use the athlete-local
   date it returns.
 
-Write the summary to `days/<date>.md`, overwriting any existing report for that date. The
-file holds the summary and nothing else: no preamble, no sign-off, no mention of having
-written it.
+Read `.claude/skills/analyze-day/references/report.md` in full and fill its skeleton. It
+owns the report's shape: the sections, their order, the session headings and fact lines,
+and the length caps. Do not improvise a different flow.
 
-Done when: the file exists and contains the summary.
+Write the filled template to `days/<date>.md`, overwriting any existing report for that
+date.
+
+Done when: the file exists and follows the template.
 
 ## Output
 
-The report file: verdict, then wellness, then one section per swim, bike, or run
-session, then the "Other Workouts" line. Aim for a screen of text. Markdown headings
-and short lines, tables if necessary. No banners, no emojis, no em dashes. End with one
-specific next action.
+The report file is the filled `references/report.md` template.
 
 Your final chat message is not the report. It is exactly this one line:
 
