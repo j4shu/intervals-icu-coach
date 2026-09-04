@@ -4,9 +4,20 @@ One block per sport family. Each block lists the tools that run on top of the sh
 floor in `analysis.md` Step 4, the units to report in, the metrics that survive a session
 character difference, and how to read them.
 
-Sport strings map to families as: `Ride` and `VirtualRide` to Bike, `Run` and `VirtualRun`
-to Run, `Swim` to Swim, and every other sport string to Other. Families are for display
-tables only. Statistical calls take the exact sport string.
+Sport strings map to families as below. This table owns the mapping; the family blocks
+repeat their own strings for convenience only.
+
+| Sport string  | Family |
+| ------------- | ------ |
+| `Ride`        | Bike   |
+| `VirtualRide` | Bike   |
+| `Run`         | Run    |
+| `VirtualRun`  | Run    |
+| `Swim`        | Swim   |
+
+Any sport string not listed is Other; the Other block below carries it.
+
+Families are for display tables only. Statistical calls take the exact sport string.
 
 ---
 
@@ -139,12 +150,11 @@ Efforts delta: `effort_family: pace`, `distance_meters: [50, 100, 200, 400, 1500
 
 ---
 
-## Other: everything that is not Swim, Bike, or Run
+## Other
 
-The catch-all. Any sport string outside `Ride`, `VirtualRide`, `Run`, `VirtualRun`, and
-`Swim` lands here: `WeightTraining`, `Yoga`, `Walk`, `Hike`, `Rowing`, `Elliptical`,
-`Workout`, and anything else the athlete logs. Do not invent a per-sport ladder for a new
-sport string; run this block for it.
+The catch-all: every sport string the family map does not list. `WeightTraining`, `Yoga`,
+`Walk`, `Hike`, `Rowing`, `Elliptical`, `Workout`, and anything else the athlete logs. Do
+not invent a per-sport ladder for a new sport string; run this block for it.
 
 `compute_zone_time` `zone_metric: heart_rate`.
 
@@ -153,10 +163,11 @@ sport string; run this block for it.
 | `get_activity_histogram` | `metric: heart_rate_bpm`, only when the activity has heart rate |
 
 Keep every one of these short. Report duration, load, average and max heart rate, heart
-rate zone distribution, and the N-back load comparison against the same exact sport
-string. Then state plainly what the file does not carry, for example no power, no pace,
-no `kg_lifted`, so there is nothing further to analyze. One or two lines each in the
-findings; these sessions do not get a rep table or a plan-versus-actual pass.
+rate zone distribution, and the N-back comparison. N-back for an Other session compares
+load and duration against its own exact sport string, nothing more. Then state plainly
+what the file does not carry, for example no power, no pace, no `kg_lifted`, so there is
+nothing further to analyze. One or two lines each in the findings; these sessions do not
+get a rep table or a plan-versus-actual pass.
 
 When the activity has no heart rate at all, skip `compute_zone_time` and the histogram,
 say so, and report duration and load only.
