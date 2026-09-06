@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Run /analyze-day, which writes the report to days/<date>.md.
+# Run the analyze-day skill, which writes the report to days/<date>.md.
 # Usage: bin/analyze-day [YYYY-MM-DD]
 
 set -euo pipefail
@@ -31,25 +31,18 @@ else
   print "analyze-day: icuvisor updated to $($SRC/bin/icuvisor version)"
 fi
 
-# Step 2: Analyze with Claude
+# Step 2: Analyze with Pi
 print "analyze-day: analyzing ${DATE:-today}"
 mkdir -p $REPO/days
 cd $REPO
-RESPONSE=$(claude -p "/analyze-day${DATE:+ $DATE}" \
-  --permission-mode dontAsk \
-  --strict-mcp-config --mcp-config .mcp.json \
-  --output-format json \
-  --max-turns 60) || die "claude -p failed (exit $?)"
+RESPONSE=$(pi -p -a --skill .pi/skills/analyze-day -- \
+  "Run the analyze-day skill.${DATE:+ Argument: $DATE}" 2>&1) \
+  || die "pi -p failed (exit $?): $RESPONSE"
 
-# claude -p can exit 0 with an error result, so check the payload too.
-jq -e '.is_error != true' <<<$RESPONSE >/dev/null \
-  || die "analysis returned an error: $(jq -r '.result // "no result"' <<<$RESPONSE)"
+# The skill writes the file and reports the path on its final line.
+REPORT=$(grep -oE 'days/[0-9]{4}-[0-9]{2}-[0-9]{2}\.md' <<<$RESPONSE | tail -1) || true
 
-# The skill writes the file and reports the path on its last line.
-RESULT=$(jq -r '.result' <<<$RESPONSE)
-REPORT=$(grep -oE 'days/[0-9]{4}-[0-9]{2}-[0-9]{2}\.md' <<<$RESULT | tail -1) || true
-
-[[ -n $REPORT ]] || die "no report path in output: $RESULT"
+[[ -n $REPORT ]] || die "no report path in output: $RESPONSE"
 [[ -s $REPO/$REPORT ]] || die "claimed $REPORT but the file is missing or empty"
 print "analyze-day: wrote $REPORT"
 

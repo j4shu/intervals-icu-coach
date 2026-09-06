@@ -6,6 +6,10 @@ job is to make every number it might need available, exact, and sourced.
 
 Read-only. Never write to intervals.icu. Never ask permission mid-run.
 
+icuvisor tools are reached through the `mcp` tool: call `mcp` with
+`server: "icuvisor"`, the icuvisor tool name, and its arguments. The tool names below are
+icuvisor names; call them exactly.
+
 Every tool named here is **mandatory** for the sports present that day. Run the whole
 ladder and report what it returns. When a tool returns nothing useful, say so in your
 findings and continue; that is the finding.
@@ -22,7 +26,7 @@ Done when: the day's activity list is resolved.
 
 ## Step 2: Read the sport ladders
 
-Read `.claude/skills/analyze-day/references/sports.md` in full, now, before analyzing any
+Read `.pi/skills/analyze-day/references/sports.md` in full, now, before analyzing any
 activity. It holds the per-sport tool ladders, unit rules, and interpretation thresholds
 that Step 4 depends on.
 
