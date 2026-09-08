@@ -4,13 +4,13 @@ Post-workout automation for triathlon training to get an AI analysis of the day.
 
 ## Usage
 
-Run the `/analyze-day` skill in [pi](https://pi.dev):
+Run the `/analyze-day` skill in [pi](https://pi.dev).
 
-Optional: After an indoor ride, use `trainerday-to-garmin` to upload the activity to Intervals.icu.
+Optional: After an indoor ride, use `trainerday-to-garmin` to upload the activity to Intervals.icu before running the skill.
 
 ## Requirements
 
-`pi` (with the [`pi-subagents`](https://github.com/nicobailon/pi-subagents) and [`pi-mcp-adapter`](https://github.com/nicobailon/pi-mcp-adapter) packages), [`icuvisor`](https://github.com/ricardocabral/icuvisor)
+`pi` (with the [`pi-subagents`](https://github.com/nicobailon/pi-subagents) and [`pi-mcp-adapter`](https://github.com/nicobailon/pi-mcp-adapter) extensions), [`icuvisor`](https://github.com/ricardocabral/icuvisor)
 
 ## Layout
 
