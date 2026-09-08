@@ -1,0 +1,22 @@
+#!/bin/zsh
+# Update the local icuvisor build to the latest GitHub release.
+
+set -euo pipefail
+
+SRC=${ICUVISOR_SRC:-~/git/icuvisor}
+
+die() { print -u2 "update-icuvisor: $1"; exit "${2:-1}" }
+
+[[ -d $SRC ]] || die "missing icuvisor source at $SRC"
+
+git -C $SRC fetch --tags --prune --quiet origin
+# gh reports the release GitHub marks latest; sorting tags locally would rank
+# a -rc tag above the release it precedes.
+TAG=$(gh release view --repo https://github.com/ricardocabral/icuvisor --json tagName -q .tagName)
+if [[ $(git -C $SRC describe --tags --exact-match 2>/dev/null) == $TAG && -x $SRC/bin/icuvisor ]]; then
+  print "update-icuvisor: icuvisor already at $TAG"
+else
+  git -c advice.detachedHead=false -C $SRC checkout --detach --quiet "refs/tags/$TAG"
+  make -C $SRC build
+  print "update-icuvisor: icuvisor updated to $($SRC/bin/icuvisor version)"
+fi
