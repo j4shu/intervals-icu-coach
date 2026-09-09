@@ -10,7 +10,7 @@ Optional: After an indoor ride, use `trainerday-to-garmin` to upload the activit
 
 ## Requirements
 
-`pi` (with the [`pi-subagents`](https://github.com/nicobailon/pi-subagents) and [`pi-mcp-adapter`](https://github.com/nicobailon/pi-mcp-adapter) extensions), [`icuvisor`](https://github.com/ricardocabral/icuvisor)
+`pi` (with [`pi-mcp-adapter`](https://github.com/nicobailon/pi-mcp-adapter)), [`icuvisor`](https://github.com/ricardocabral/icuvisor)
 
 ## Layout
 
