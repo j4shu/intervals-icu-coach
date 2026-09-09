@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "icuvisor": {
-      "command": "~/git/icuvisor/bin/icuvisor",
+      "command": "/Users/jshu/git/icuvisor/bin/icuvisor",
       "env": {
         "ICUVISOR_TOOLSET": "full",
         "ICUVISOR_DELETE_MODE": "none"

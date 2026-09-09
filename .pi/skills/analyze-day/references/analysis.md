@@ -1,18 +1,18 @@
 # Data collection ladder
 
-You are the analyst subagent for `analyze-day`. You fetch and compute; you do not write
-prose for the athlete. A separate agent turns your findings into a short summary, so your
-job is to make every number it might need available, exact, and sourced.
+Run this ladder for the target day and retain only what `references/report.md` needs; the
+report template is the contract for what to keep. When a tool returns nothing useful, say
+so plainly in the report and continue; that is the finding.
 
-Read-only. Never write to intervals.icu. Never ask permission mid-run.
+Read-only on intervals.icu. Never write to intervals.icu. Never write a file here; you
+write only the report in `days/<date>.md`. Never ask permission mid-run.
 
 icuvisor tools are reached through the `mcp` tool: call `mcp` with
 `server: "icuvisor"`, the icuvisor tool name, and its arguments. The tool names below are
 icuvisor names; call them exactly.
 
 Every tool named here is **mandatory** for the sports present that day. Run the whole
-ladder and report what it returns. When a tool returns nothing useful, say so in your
-findings and continue; that is the finding.
+ladder, then carry into the report only what it flushes out.
 
 ## Step 1: Resolve the day and fetch it
 
@@ -69,8 +69,9 @@ When `interval_source` is `device_laps`, or `auto_lap_suspected` is true, or the
 collapses to one averaged lap, say so plainly and use `compute_activity_segment_stats`
 over explicit segments for any execution claim.
 
-Cite the source tool behind each number. Report units exactly as the sport ladder
-specifies. Label subjective scales as icuvisor returns them: sleep quality 1-4, feel 1-5.
+Track the source tool behind each number for your own fidelity, but the report does not
+cite tools. Report units exactly as the sport ladder specifies. Label subjective scales as
+icuvisor returns them: sleep quality 1-4, feel 1-5.
 
 Done when: every activity in the day's list has been through the shared floor and its
 sport ladder, with no activity summarized from the day-list row alone.
@@ -143,53 +144,9 @@ Subjective scales as icuvisor returns them: sleep quality 1-4, feel 1-5.
 Done when: the target date's wellness row, the fitness numbers, and both trends are in
 hand, with any absent field named explicitly.
 
-## Findings report
-
-Return the findings as your final message. Do not write them to a file. Do not address the
-athlete; you are reporting to another agent.
-
-Dense over readable. Tables and short labelled lines, no narrative paragraphs, no advice,
-no next action. Include every number the ladder produced, each with its source tool in
-parentheses. Flag anything the synthesizing agent must not overstate: missing data,
-`insufficient_sample`, `auto_lap_suspected`, `device_laps` intervals, profile warnings,
-sports with fewer than 3 priors.
-
-Structure:
-
-```
-DATE: Sunday 2026-07-26 (resolve_calendar_dates, tz America/New_York)
-ROLLUP: 2 sessions | load 85 | 2h14m | Bike then Run, 4 min gap | brick
-COMBINED ZONES: Z1 22% Z2 41% Z3 19% Z4 18% (compute_zone_time)
-
-SESSION 1 | VirtualRide "4x4 115%"
-  INTENT: <from description, get_activity_details include_full>
-  PLAN VS ACTUAL: <compliance_percent, per-rep target vs actual>
-  METRICS: <load, IF, NP, pw_hr, decoupling, VI, polarization, zone time>
-  REPS: <table>
-  N-BACK: <table, 3 priors, surface and character labelled>
-  BASELINE: <z-scores, exact sport population named, trend, efforts delta>
-  CAVEATS: <...>
-
-SESSION 2 | Run "Brick Run"
-  ...
-  BRICK: opening mile split and opening HR vs standalone Run baseline
-
-OTHER
-  WeightTraining "Upper body" | 48m | load 22 | HR avg 112 max 148 | HR zones Z1 61% Z2 33%
-    N-BACK load: 22, 19, 24 | no power, pace, or kg_lifted in the file
-  Walk "Evening walk" | 31m | load 8 | no heart rate, duration and load only
-
-WELLNESS (get_wellness_data, 2026-07-26)
-  HRV 68 (7d mean 64) | RHR 48 (7d mean 50) | sleep 7h12m (7d mean 6h48m)
-  sleep quality 3/4 | sleep score 81 | feel 4/5 | fatigue 2 | soreness 1 | weight 154.2 lb
-  TRENDS (analyze_trend, 42d): hrv slope +0.4/day, current vs baseline +5
-    sleep_secs slope flat, current vs baseline -12 min
-
-FITNESS (get_fitness)
-  CTL 62 (+1.4 over 7d) | ATL 71 (+6.0) | TSB -9 | ramp 3.2
-
-FLAGS: <anything missing, stale, truncated, or unreliable>
-```
+The report template in `references/report.md` is the contract for what to retain. Carry
+missing data, `insufficient_sample`, `auto_lap_suspected`, `device_laps` intervals, profile
+warnings, and sports with fewer than 3 priors into the report's flags and Caveats.
 
 ## Verified facts about these tools
 

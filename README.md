@@ -14,6 +14,4 @@ Optional: After an indoor ride, use `trainerday-to-garmin` to upload the activit
 
 ## Layout
 
-The analyze-day skill lives in `.pi/skills/analyze-day` and its analyst subagent in
-`.pi/agents/analyze-day-analyst.md`. The skill is triggered from an interactive pi session;
-icuvisor MCP comes from `.mcp.json` and is configured independently.
+The analyze-day skill lives in `.pi/skills/analyze-day`. The `icuvisor` MCP comes from `.mcp.json` and is configured independently.
