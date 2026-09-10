@@ -23,16 +23,14 @@ Families are for display tables only. Statistical calls take the exact sport str
 
 ## Bike: Ride, VirtualRide
 
-`compute_zone_time` `zone_metric: power`.
-
 | Tool                             | Arguments                                                                              |
 | -------------------------------- | -------------------------------------------------------------------------------------- |
 | `get_activity_histogram`         | `metric: power_watts`                                                                  |
 | `get_activity_splits`            | default unit                                                                           |
-| `get_power_curves`               | `sport` = exact sport string, 90-day window                                            |
-| `get_events`                     | the target date, `include_full: true`                                                  |
+| `get_power_curves`               | `sport` = exact sport string, `oldest`/`newest` = 90-day window                        |
+| `get_events`                     | `oldest` **and** `newest` = the target date, `include_full: true`                      |
 | `compute_activity_segment_stats` | `stat: np`, then `stat: if` with `ftp_watts` from the profile, then `stat: decoupling` |
-| `compute_zone_energy`            | the target date, mechanical kJ by power zone                                           |
+| `compute_zone_energy`            | `start_date`/`end_date` = the target date, mechanical kJ by power zone                 |
 
 ### Plan versus actual, bike only
 
@@ -76,13 +74,11 @@ Efforts delta: `effort_family: power`, `duration_seconds: [60, 300, 1200, 3600]`
 
 ## Run: Run, VirtualRun
 
-`compute_zone_time` `zone_metric: pace`.
-
 | Tool                             | Arguments                                       |
 | -------------------------------- | ----------------------------------------------- |
 | `get_activity_histogram`         | `metric: pace_seconds_per_km`, report as min/mi |
 | `get_activity_splits`            | default unit, mi                                |
-| `get_pace_curves`                | `sport` = exact sport string, 90-day window     |
+| `get_pace_curves`                | `sport` = exact sport string, `oldest`/`newest` = 90-day window |
 | `compute_activity_segment_stats` | `stat: drift`, then `stat: decoupling`          |
 
 Report pace as min/mi, the athlete's preferred unit.
@@ -107,13 +103,11 @@ Efforts delta: `effort_family: pace`, `distance_meters: [400, 1000, 1609, 5000]`
 
 ## Swim
 
-`compute_zone_time` `zone_metric: pace`.
-
 | Tool                     | Arguments                                                   |
 | ------------------------ | ----------------------------------------------------------- |
 | `get_activity_histogram` | `metric: pace_seconds_per_km`, convert for report           |
-| `get_pace_curves`        | `sport: Swim`, `distance_meters: [50, 100, 200, 400, 1500]` |
-| `get_activity_intervals` | `include_full: true`, for per-rep pace and heart rate       |
+| `get_pace_curves`        | `sport: Swim`, `oldest`/`newest` = 90-day window, `distance_meters: [50, 100, 200, 400, 1500]` |
+| `get_activity_intervals` | `include_full: true` only for per-rep heart rate; the payload is ~110 KiB and truncates |
 
 Report all swim pace as **per 100 yards**. The pool is 25 yd and the swim library is in
 yards. `get_pace_curves` returns `pace_seconds_per_mile`; convert with
@@ -122,12 +116,18 @@ yards. `get_pace_curves` returns `pace_seconds_per_mile`; convert with
 Skip `get_activity_splits`. On a pool swim it returns one mile-long split and tells you
 nothing.
 
-Terse `get_activity_intervals` returns `distance_m` and sample indices but no per-rep
-pace or heart rate, which is why swim needs `include_full: true`. Rep duration in seconds
-is `end_index` minus `start_index` when `icu_median_time_delta` is 1.
+Terse `get_activity_intervals` returns per-rep `distance_m`, `zone` and
+`average_step_length` (stroke length) but no per-rep heart rate. Pace is derived from
+`distance_m` and the index span, so only heart rate needs `include_full: true`. Rep
+duration in seconds is `end_index` minus `start_index` when `icu_median_time_delta` is 1.
 
-`interval_summary` on the activity gives the set in the athlete's own notation, for
-example `["3x 800y 1:31"]`, already per 100 yards.
+`include_full: true` on a swim returns roughly 110 KiB and the transport truncates it
+mid-payload, so read the terse rep rows and take `interval_summary` from
+`get_activity_details` `include_full` instead.
+
+`interval_summary` on the activity, read from `get_activity_details` `include_full`, gives
+the set in the athlete's own notation, for example `["3x 800y 1:31"]`, already per 100
+yards. The terse details shape omits it entirely.
 
 ### Reading it
 
@@ -156,8 +156,6 @@ The catch-all: every sport string the family map does not list. `WeightTraining`
 `Walk`, `Hike`, `Rowing`, `Elliptical`, `Workout`, and anything else the athlete logs. Do
 not invent a per-sport ladder for a new sport string; run this block for it.
 
-`compute_zone_time` `zone_metric: heart_rate`.
-
 | Tool                     | Arguments                                                       |
 | ------------------------ | --------------------------------------------------------------- |
 | `get_activity_histogram` | `metric: heart_rate_bpm`, only when the activity has heart rate |
@@ -169,8 +167,8 @@ what the file does not carry, for example no power, no pace, no `kg_lifted`, so 
 nothing further to analyze. One or two lines each in the findings; these sessions do not
 get a rep table or a plan-versus-actual pass.
 
-When the activity has no heart rate at all, skip `compute_zone_time` and the histogram,
-say so, and report duration and load only.
+When the activity has no heart rate at all, skip the histogram, say so, and report
+duration and load only.
 
 Include the load in the day roll-up. Two to three of these a week is real chronic load
 even though each session reads thin.

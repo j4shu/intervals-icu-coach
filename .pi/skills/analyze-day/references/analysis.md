@@ -42,7 +42,9 @@ shortfall in that sport's section and move on. Do not page further and do not wi
 window looking for more.
 
 Also call `get_athlete_profile` once for thresholds, zones, sport settings, and preferred
-units. Read its `_meta.warnings`; a missing sport setting changes what the numbers mean.
+units. Read `sport_settings` per exact sport string, because a sport string with no entry
+has no zones to report. This profile carries no `_meta.warnings` field, so a missing sport
+setting shows up as an absent `sport_settings` entry, not as a warning.
 
 Done when: one history page and the athlete profile are in hand.
 
@@ -59,7 +61,11 @@ Shared floor, every sport:
 | `get_activity_intervals` | Rep structure. Read `_meta.interval_source`, `_meta.auto_lap_suspected`, `_meta.interval_source_caveat` before making any claim about execution. |
 | `get_extended_metrics` | Decoupling, intensity factor, `pw_hr`, polarization, variability, stride/stroke length, per-interval strain. |
 | `get_activity_messages` | Comments on the activity. |
-| `compute_zone_time` | Zone distribution and polarization. Use the `zone_metric` named in the sport ladder. |
+
+Per-activity zone distribution does not come from a tool. Read it from the activity row's
+`icu_zone_times` (power) or `icu_hr_zone_times` (heart rate) and cross-check it against
+`get_activity_histogram`. `compute_zone_time` is a date-range weekly aggregate, never a
+per-activity or per-day one; see the verified facts below.
 
 Sports outside Swim, Bike, and Run run the Other block in `references/sports.md`, which
 pares the floor down: no rep table, no plan-versus-actual, and no zone work when the file
@@ -152,6 +158,18 @@ warnings, and sports with fewer than 3 priors into the report's flags and Caveat
 
 Each was checked against this athlete's data. Trust them over assumptions.
 
+- Read every tool's `inputTypeScript` before its first call, in one `mcpScript` loop over
+  `tools.describe({ path: "icuvisor_<tool>" })`. The name needs the `icuvisor_` prefix; a
+  bare name returns `tool_not_found`, and the mcp tool's `describe` needs it too. The
+  argument names are not guessable: `get_events` wants `oldest` **and** `newest`,
+  `compute_zone_energy` and `compute_zone_time` want `start_date`/`end_date`, and
+  `compute_activity_segment_stats` wants a time or distance range on every call.
+- `compute_zone_time` takes dates, not an `activity_id`, and it sits on the upstream
+  weekly bucket. A single-day range returns `status: unavailable` with
+  `insufficient_reason: missing_precomputed_zone_times` and `n: 0` for every sport. A
+  7-day range returns the whole week's seconds, not the day's. Use it for week-scale
+  polarization context only.
+
 - `get_activity_details` terse omits `description` entirely, populated or not. Only
   `include_full: true` returns it.
 - `get_activity_splits` on a pool swim is meaningless. It defaults to `split_unit: mi`
@@ -164,6 +182,26 @@ Each was checked against this athlete's data. Trust them over assumptions.
   family, so `sport: "Run"` there includes `VirtualRun`. The two disagree by design.
 - `compute_baseline` defaults to `min_samples: 7`. A 42-day run baseline returns
   `insufficient_sample` for this athlete; 90 days clears it.
+- `get_activity_histogram` can return `insufficient_sample: true` with
+  `reason: stream_fetch_failed` on a strength file, which carries `time` and `heartrate`
+  streams but no `watts` or `cadence`. Fall back to the row's `icu_hr_zone_times`, which is
+  populated on those activities, and say the histogram was unavailable.
+- `get_activity_histogram` takes `metric: pace_seconds_per_km` or `heart_rate_bpm`, but the
+  pace buckets come back in **seconds per mile**, with `_meta.emitted_unit` set to
+  `seconds_per_mile` and the bucket boundaries matching. For a run that is already the
+  report unit; for a swim convert to per 100 yd with the same 0.0568 factor.
+- `interval_summary` and `paired_event_id` exist only under `get_activity_details`
+  `include_full: true`. The terse shape omits both, so a ride reads as unplanned and a set
+  reads as unknown until the full call is made.
+- The activity `threshold_pace` field is in metres per second, not seconds. The swim
+  activity's `1.075768` is the athlete's 85.0 s/100y, matching
+  `threshold_pace_seconds_per_100y` in the profile.
+- `get_activity_details` `include_full: true` on a swim returns about 110 KiB and the
+  transport truncates it mid-payload. Take rep rows from the terse intervals call and
+  `interval_summary` from the full details call.
+- `get_pace_curves` requires `oldest` and `newest`; `sport: Swim` alone fails. Swim pace
+  comes back as `pace_seconds_per_mile` and the default swim buckets are
+  50/100/200/400/1500 m.
 - `get_power_curves` returns metric `_meta.units` while every other tool returns imperial.
   Watts are unit-neutral so this is harmless, but do not carry those units into prose.
 - Activity `tags` are empty across the board. Session character comes from `description`
