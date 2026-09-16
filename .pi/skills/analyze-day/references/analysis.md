@@ -153,15 +153,16 @@ and any brick has its opening-split comparison.
 The day is not only its sessions. Run all three of these every time, whether or
 not the day has an activity.
 
-1. `get_wellness_data` with `oldest` 7 days before the target date and `newest`
-   the target date. Report the target date's row: HRV, resting HR, sleep
-   duration, sleep quality, sleep score, weight, and whichever of feel, fatigue,
-   soreness, stress, motivation, and readiness the athlete logged. Give the
-   7-day mean alongside HRV, resting HR, and sleep duration so the day reads
-   against its own recent normal.
+1. `get_wellness_data` over the 7 days ending on the target date. Report the
+   target date's row: HRV, resting HR, sleep duration, sleep quality, sleep
+   score, weight, and whichever of feel, fatigue, soreness, stress, motivation,
+   and readiness the athlete logged. Give the mean of those 7 days alongside
+   HRV, resting HR, and sleep duration so the day reads against its own recent
+   normal.
 2. `get_fitness` with `start_date` 7 days before the target date and `end_date`
-   the target date. Report CTL, ATL, TSB, and ramp on the target date, plus the
-   7-day move in each.
+   the target date. That span is 8 days on purpose, because a 7-day move needs
+   the reference row from seven days back. Report CTL, ATL, TSB, and ramp on the
+   target date, plus the 7-day move in each.
 3. `analyze_trend` twice over the 42 days ending on the target date,
    `metric: hrv` and `metric: sleep_secs`. Report slope direction and the
    current-versus-baseline delta.
