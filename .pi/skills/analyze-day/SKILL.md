@@ -9,7 +9,7 @@ disable-model-invocation: true
 This skill never writes to intervals.icu and never asks permission mid-run.
 
 Argument: an optional athlete-local `YYYY-MM-DD` named in the invoking prompt. Omitted
-means today.
+means the host's current local date.
 
 icuvisor tools run behind the `mcp` tool. Call `mcp` with the icuvisor tool name and its
 arguments, adding `server: "icuvisor"` to disambiguate. Call `mcp` with
@@ -25,28 +25,23 @@ Done when: every step of the ladder has run and its findings are in hand.
 
 ## Step 2: Write the report
 
-The report is a file, not a chat message. Its name must come from the same date the
-analysis covers, so resolve the date before naming it.
-
-- If the argument was a `YYYY-MM-DD`, that is the date.
-- If it was omitted, call `mcp` with `tool: "resolve_calendar_dates"` and
-  `args: { "offsets": [0] }`, and use the athlete-local date it returns.
-
 Read `.pi/skills/analyze-day/references/report.md` in full and fill its skeleton. It owns
 the report's shape: the sections, their order, the session headings and fact lines, and
 the length caps. Do not improvise a different flow.
 
-Write the filled template to `days/<date>.md`, overwriting any existing report for that
-date.
+Write the filled template to `days/<date>.md`, naming it with the date Step 1 resolved and
+overwriting any existing report for that date.
 
 Done when: the file exists and follows the template.
 
 ## Output
 
-Your final chat message is not the report. It is exactly this one line:
+Your final chat message is not the report. It is exactly this one line, naming the file you
+wrote:
 
 ```
 Wrote days/<date>.md
 ```
 
-A caller parses it, so do not reword it, pad it, or add anything after it.
+Fill `<date>` with the date Step 1 resolved, so the line matches the filename. Do not
+reword it, pad it, or add anything after it.

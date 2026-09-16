@@ -14,10 +14,11 @@ ladder, then carry into the report only what it flushes out.
 
 ## Step 1: Resolve the day and fetch it
 
-1. `resolve_calendar_dates` with `offsets: [0]` for the athlete-local date, weekday, and
-   timezone. When the caller named an explicit `YYYY-MM-DD`, that date is the target and
-   `resolve_calendar_dates` supplies only the timezone and weekday for it.
-   Do not compute dates by model arithmetic.
+1. Resolve the target date and weekday in the shell, in the host's local timezone, which
+   is the athlete's. If the caller named a `YYYY-MM-DD`, run
+   `date -j -f "%Y-%m-%d" "<the date>" +"%F %A"`; otherwise run `date +"%F %A"`. Both
+   print the date and weekday that go in the report header. Never compute a date by model
+   arithmetic.
 2. `get_activities` for that single date.
 
 Done when: the day's activity list is resolved.
