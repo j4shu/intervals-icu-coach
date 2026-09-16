@@ -1,15 +1,13 @@
 # Data collection ladder
 
-Run this ladder for the target day and retain only what `references/report.md` needs; the
-report template is the contract for what to keep. When a tool returns nothing useful, say
-so plainly in the report and continue; that is the finding.
+Run this ladder for the target day and retain only what `references/report.md` needs. When
+a tool returns nothing useful, say so plainly in the report and continue; that is the
+finding.
 
-Read-only on intervals.icu. Never write to intervals.icu. Never write a file here; you
-write only the report in `days/<date>.md`. Never ask permission mid-run.
+Never write a file in this step; the report in `days/<date>.md` is the only file this skill
+writes.
 
-icuvisor tools are reached through the `mcp` tool: call `mcp` with
-`server: "icuvisor"`, the icuvisor tool name, and its arguments. The tool names below are
-icuvisor names; call them exactly.
+The tool names below are icuvisor names; call them exactly.
 
 Every tool named here is **mandatory** for the sports present that day. Run the whole
 ladder, then carry into the report only what it flushes out.
@@ -42,9 +40,9 @@ shortfall in that sport's section and move on. Do not page further and do not wi
 window looking for more.
 
 Also call `get_athlete_profile` once for thresholds, zones, sport settings, and preferred
-units. Read `sport_settings` per exact sport string, because a sport string with no entry
-has no zones to report. This profile carries no `_meta.warnings` field, so a missing sport
-setting shows up as an absent `sport_settings` entry, not as a warning.
+units. Read `sport_settings` per exact sport string: a sport string with no entry has no
+zones to report, and it shows up as an absent `sport_settings` entry rather than as a
+warning.
 
 Done when: one history page and the athlete profile are in hand.
 
@@ -57,10 +55,10 @@ Shared floor, every sport:
 
 | Tool | Why |
 | --- | --- |
-| `get_activity_details` **`include_full: true`** | The terse shape omits `description` even when it is populated. The description carries the session's intent and target. |
+| `get_activity_details` **`include_full: true`** | The terse shape omits `description` even when it is populated, and that field carries the session's intent and target. |
 | `get_activity_intervals` | Rep structure. Read `_meta.interval_source`, `_meta.auto_lap_suspected`, `_meta.interval_source_caveat` before making any claim about execution. |
 | `get_extended_metrics` | Decoupling, intensity factor, `pw_hr`, polarization, variability, stride/stroke length, per-interval strain. |
-| `get_activity_messages` | Comments on the activity. |
+| `get_activity_messages` | The athlete's own comments, which the numbers do not carry. |
 
 Per-activity zone distribution does not come from a tool. Read it from the activity row's
 `icu_zone_times` (power) or `icu_hr_zone_times` (heart rate) and cross-check it against
@@ -75,9 +73,8 @@ When `interval_source` is `device_laps`, or `auto_lap_suspected` is true, or the
 collapses to one averaged lap, say so plainly and use `compute_activity_segment_stats`
 over explicit segments for any execution claim.
 
-Track the source tool behind each number for your own fidelity, but the report does not
-cite tools. Report units exactly as the sport ladder specifies. Label subjective scales as
-icuvisor returns them: sleep quality 1-4, feel 1-5.
+Track the source tool behind each number for your own fidelity, but the report file carries
+no tool citations. Report units exactly as the sport ladder specifies.
 
 Done when: every activity in the day's list has been through the shared floor and its
 sport ladder, with no activity summarized from the day-list row alone.
@@ -103,8 +100,21 @@ runs about 648 s/mi with a standard deviation near 7. Merging them produces a co
 spread that hides a treadmill session being far off its own normal. State which
 population each z-score came from.
 
-`compute_baseline` needs `min_samples` 7. When it returns `insufficient_sample`, report
-that plainly with the `n_baseline` it found and move on.
+`compute_baseline` needs `min_samples` 7, which is why the window is 90 days: a 42-day run
+baseline comes back `insufficient_sample` for this athlete. When it does, report that
+plainly with the `n_baseline` it found and move on.
+
+The two windows must not touch. `baseline_end_date` has to fall strictly earlier than
+`current_start_date`, so a baseline that ends the same day the current window starts is
+rejected. That is easy to hit by accident, because the natural phrasing "the 90 days
+ending at the target" against "the 90 days before that" produces exactly that shared
+boundary. Leave a day or more between the windows.
+
+The rejection is also hard to read: the user-facing text is the generic "invalid
+compute_baseline arguments" and the specific reason is wrapped rather than shown, so a
+failure usually means a boundary or date-format problem rather than a bad metric name.
+Check the seam first, and do not conclude the tool is broken. The usable payload nests
+under `result`, with `insufficient_sample` in `_meta` alongside it.
 
 Add `analyze_efforts_delta` for the sport's effort family. Best-effort deltas are
 independent of session character, which makes them the most reliable progression signal
@@ -132,9 +142,9 @@ The day is not only its sessions. Run all three of these every time, whether or 
 day has an activity.
 
 1. `get_wellness_data` with `oldest` 7 days before the target date and `newest` the target
-   date. Report the target date's row: HRV, resting HR, sleep duration, sleep quality
-   (1-4), sleep score, weight, and whichever of feel (1-5), fatigue, soreness, stress,
-   motivation, and readiness the athlete logged. Give the 7-day mean alongside HRV,
+   date. Report the target date's row: HRV, resting HR, sleep duration, sleep quality,
+   sleep score, weight, and whichever of feel, fatigue, soreness, stress, motivation, and
+   readiness the athlete logged. Give the 7-day mean alongside HRV,
    resting HR, and sleep duration so the day reads against its own recent normal.
 2. `get_fitness` with `start_date` 7 days before the target date and `end_date` the target
    date. Report CTL, ATL, TSB, and ramp on the target date, plus the 7-day move in each.
@@ -145,22 +155,25 @@ If the target date's wellness row is missing or partly empty, name the absent fi
 the latest date that does carry them. Never carry a neighbouring day's HRV or sleep
 forward as if it were the target date's, and never infer a value from the trend line.
 
-Subjective scales as icuvisor returns them: sleep quality 1-4, feel 1-5.
-
 Done when: the target date's wellness row, the fitness numbers, and both trends are in
 hand, with any absent field named explicitly.
 
-The report template in `references/report.md` is the contract for what to retain. Carry
-missing data, `insufficient_sample`, `auto_lap_suspected`, `device_laps` intervals, profile
-warnings, and sports with fewer than 3 priors into the report's flags and Caveats.
+Carry missing data, `insufficient_sample`, `auto_lap_suspected`, `device_laps` intervals,
+profile warnings, and sports with fewer than 3 priors into the report's Caveats.
 
 ## Verified facts about these tools
 
 Each was checked against this athlete's data. Trust them over assumptions.
 
+- The server must be connected before any tool name resolves. `tools.search` returning
+  zero items, or `tools.describe({ path: "icuvisor_<tool>" })` returning `tool_not_found`,
+  means the server is disconnected, not that the name is wrong: call
+  `mcp({ connect: "icuvisor" })` and retry. `mcp({})` with no arguments reports the
+  connection state and tool count.
 - Read every tool's `inputTypeScript` before its first call, in one `mcpScript` loop over
-  `tools.describe({ path: "icuvisor_<tool>" })`. The name needs the `icuvisor_` prefix; a
-  bare name returns `tool_not_found`, and the mcp tool's `describe` needs it too. The
+  `tools.describe({ path: "icuvisor_<tool>" })`, once the server is connected. The name
+  needs the `icuvisor_` prefix even then: a bare name returns `tool_not_found` and a bare
+  `tools.call` fails, and the mcp tool's `describe` needs the prefix too. The
   argument names are not guessable: `get_events` wants `oldest` **and** `newest`,
   `compute_zone_energy` and `compute_zone_time` want `start_date`/`end_date`, and
   `compute_activity_segment_stats` wants a time or distance range on every call.
@@ -169,19 +182,11 @@ Each was checked against this athlete's data. Trust them over assumptions.
   `insufficient_reason: missing_precomputed_zone_times` and `n: 0` for every sport. A
   7-day range returns the whole week's seconds, not the day's. Use it for week-scale
   polarization context only.
-
-- `get_activity_details` terse omits `description` entirely, populated or not. Only
-  `include_full: true` returns it.
 - `get_activity_splits` on a pool swim is meaningless. It defaults to `split_unit: mi`
   and returns a single mile-long split. Swim rep splits come from `get_activity_intervals`
   with `include_full: true`.
-- `get_pace_curves` reports swim pace as `pace_seconds_per_mile`. Convert to per 100
-  yards for swim output: `s_per_100y = pace_seconds_per_mile * 0.0568`. The pool is 25 yd
-  and the swim library is in yards.
 - `compute_baseline` filters `sport` by exact string. `get_pace_curves` aggregates the
   family, so `sport: "Run"` there includes `VirtualRun`. The two disagree by design.
-- `compute_baseline` defaults to `min_samples: 7`. A 42-day run baseline returns
-  `insufficient_sample` for this athlete; 90 days clears it.
 - `get_activity_histogram` can return `insufficient_sample: true` with
   `reason: stream_fetch_failed` on a strength file, which carries `time` and `heartrate`
   streams but no `watts` or `cadence`. Fall back to the row's `icu_hr_zone_times`, which is
@@ -189,19 +194,23 @@ Each was checked against this athlete's data. Trust them over assumptions.
 - `get_activity_histogram` takes `metric: pace_seconds_per_km` or `heart_rate_bpm`, but the
   pace buckets come back in **seconds per mile**, with `_meta.emitted_unit` set to
   `seconds_per_mile` and the bucket boundaries matching. For a run that is already the
-  report unit; for a swim convert to per 100 yd with the same 0.0568 factor.
+  report unit; apply the Swim block's conversion for a swim.
 - `interval_summary` and `paired_event_id` exist only under `get_activity_details`
   `include_full: true`. The terse shape omits both, so a ride reads as unplanned and a set
   reads as unknown until the full call is made.
 - The activity `threshold_pace` field is in metres per second, not seconds. The swim
   activity's `1.075768` is the athlete's 85.0 s/100y, matching
   `threshold_pace_seconds_per_100y` in the profile.
-- `get_activity_details` `include_full: true` on a swim returns about 110 KiB and the
-  transport truncates it mid-payload. Take rep rows from the terse intervals call and
-  `interval_summary` from the full details call.
-- `get_pace_curves` requires `oldest` and `newest`; `sport: Swim` alone fails. Swim pace
-  comes back as `pace_seconds_per_mile` and the default swim buckets are
-  50/100/200/400/1500 m.
+- Neither `include_full: true` payload truncates. `get_activity_details` stays small,
+  measured at about 6 KB on a swim, and nests the extra fields under `activity.full`;
+  `get_activity_intervals` is the large one at about 150 KB, so project that down to the
+  fields in use rather than emitting it raw.
+- On any activity, `get_activity_intervals` `include_full: true` nests per-interval detail
+  under `intervals[].full`, so heart rate is at `intervals[].full.average_heartrate` rather
+  than at the top level of the interval object. A projection reading `average_heartrate`
+  directly sees nothing and wrongly concludes the field is absent. The terse `groups` block
+  carries a per-group average bpm and cadence and is a cheap cross-check.
+- `get_pace_curves` requires `oldest` and `newest`; `sport: Swim` alone fails.
 - `get_power_curves` returns metric `_meta.units` while every other tool returns imperial.
   Watts are unit-neutral so this is harmless, but do not carry those units into prose.
 - Activity `tags` are empty across the board. Session character comes from `description`

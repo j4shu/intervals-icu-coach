@@ -54,7 +54,7 @@ Nothing here names a sport. Per-sport fields come from `references/sports.md`.
 
 ## Rules
 
-- Emit all six sections in this order every time, whatever the day held. A section with
+- Emit every section in this order every time, whatever the day held. A section with
   nothing in it carries the single word `None` and nothing more, not a bullet.
 - One `## <Sport>: "<name>"` section per session, in chronological order. The session name
   disambiguates two sessions of the same sport. When an activity has no name, use the

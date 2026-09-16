@@ -4,8 +4,7 @@ One block per sport family. Each block lists the tools that run on top of the sh
 floor in `analysis.md` Step 4, the units to report in, the metrics that survive a session
 character difference, and how to read them.
 
-Sport strings map to families as below. This table owns the mapping; the family blocks
-repeat their own strings for convenience only.
+Sport strings map to families as below; this table owns the mapping.
 
 | Sport string  | Family |
 | ------------- | ------ |
@@ -107,7 +106,7 @@ Efforts delta: `effort_family: pace`, `distance_meters: [400, 1000, 1609, 5000]`
 | ------------------------ | ----------------------------------------------------------- |
 | `get_activity_histogram` | `metric: pace_seconds_per_km`, convert for report           |
 | `get_pace_curves`        | `sport: Swim`, `oldest`/`newest` = 90-day window, `distance_meters: [50, 100, 200, 400, 1500]` |
-| `get_activity_intervals` | `include_full: true` only for per-rep heart rate; the payload is ~110 KiB and truncates |
+| `get_activity_intervals` | `include_full: true` for per-rep heart rate |
 
 Report all swim pace as **per 100 yards**. The pool is 25 yd and the swim library is in
 yards. `get_pace_curves` returns `pace_seconds_per_mile`; convert with
@@ -121,13 +120,9 @@ Terse `get_activity_intervals` returns per-rep `distance_m`, `zone` and
 `distance_m` and the index span, so only heart rate needs `include_full: true`. Rep
 duration in seconds is `end_index` minus `start_index` when `icu_median_time_delta` is 1.
 
-`include_full: true` on a swim returns roughly 110 KiB and the transport truncates it
-mid-payload, so read the terse rep rows and take `interval_summary` from
-`get_activity_details` `include_full` instead.
-
 `interval_summary` on the activity, read from `get_activity_details` `include_full`, gives
 the set in the athlete's own notation, for example `["3x 800y 1:31"]`, already per 100
-yards. The terse details shape omits it entirely.
+yards.
 
 ### Reading it
 
@@ -173,8 +168,8 @@ duration and load only.
 Include the load in the day roll-up. Two to three of these a week is real chronic load
 even though each session reads thin.
 
-Grouping in the findings: report all Other-family sessions under a single `OTHER`
-section, one block per session, rather than giving each its own top-level section.
+Report all Other-family sessions under the report's `## Other Workouts` section, one block
+per session, rather than giving each its own top-level section.
 
 Report line tail (see `references/report.md`): average heart rate when the file carries
 one, nothing otherwise. No surface; the distinction does not mean anything for these
