@@ -33,20 +33,22 @@ Done when: `references/sports.md` has been read this run.
 
 ## Step 3: Fetch comparison history
 
-One call: `get_activities` with `page_size: 20` and `oldest` set to 90 days
-before the target date. This single page supplies the N-back tables for every
-sport.
+One call: `get_activities` with `page_size: 100` over the 42 days ending on the
+target date. This page supplies the N-back tables for every sport. Check
+`_meta.more_available`: when it is true the page stopped before the window edge,
+so follow its `next_page_token` for the rest before building the tables, and say
+so if you stop early.
 
-Take what this page contains. When a sport has fewer than 3 priors in it, note
-the shortfall in that sport's section and move on. Do not page further and do
-not widen the window looking for more.
+When a sport has fewer than 3 priors in it, note the shortfall in that sport's
+section and move on. Do not widen the window looking for more.
 
 Also call `get_athlete_profile` once for thresholds, zones, sport settings, and
 preferred units. Read `sport_settings` per exact sport string: a sport string
 with no entry has no zones to report, and it shows up as an absent
 `sport_settings` entry rather than as a warning.
 
-Done when: one history page and the athlete profile are in hand.
+Done when: history covering the 42-day window and the athlete profile are in
+hand.
 
 ## Step 4: Analyze each activity
 
@@ -96,24 +98,27 @@ Take the character from the activity `description` when there is one, and from
 the name otherwise. Compare on the metrics that survive a character difference
 rather than on raw pace or raw IF; the sport ladder names them.
 
-**Baseline verdict.** `compute_baseline` and `analyze_trend` over the 90 days
-before the target date, with `sport` set to the **exact** sport string, not the
-family. These tools fetch server-side, so this costs no history in context.
+**Baseline verdict.** `compute_baseline` and `analyze_trend` over the 42 days
+ending on the target date, with `sport` set to the **exact** sport string, not
+the family. `compute_baseline` also takes the 42 days before that as its
+baseline window. These tools fetch server-side, so this costs no history in
+context.
 
-Keeping the statistics exact-sport is deliberate. Over 90 days the outdoor `Run`
-population runs about 619 s/mi with a standard deviation near 101, while
-`VirtualRun` runs about 648 s/mi with a standard deviation near 7. Merging them
-produces a combined spread that hides a treadmill session being far off its own
-normal. State which population each z-score came from.
+Keeping the statistics exact-sport is deliberate. Merging two populations under
+one spread hides a session that sits far off its own normal, which is how a
+treadmill run reads as unremarkable next to outdoor runs. State which population
+each z-score came from.
 
-`compute_baseline` needs `min_samples` 7, which is why the window is 90 days: a
-42-day run baseline comes back `insufficient_sample` for this athlete. When it
-does, report that plainly with the `n_baseline` it found and move on.
+`compute_baseline` needs `min_samples` 7, and a 42-day window will not always
+hold seven sessions. When it returns `insufficient_sample`, or when a sport has
+nothing at all inside the window, report that plainly with the `n_baseline` it
+found and move on. A sport the athlete has not touched in 42 days is a normal
+outcome, not a broken call, and it is not a reason to widen the window.
 
 The two windows must not touch. `baseline_end_date` has to fall strictly earlier
 than `current_start_date`, so a baseline that ends the same day the current
 window starts is rejected. That is easy to hit by accident, because the natural
-phrasing "the 90 days ending at the target" against "the 90 days before that"
+phrasing "the 42 days ending at the target" against "the 42 days before that"
 produces exactly that shared boundary. Leave a day or more between the windows.
 
 The rejection is also hard to read: the user-facing text is the generic "invalid
@@ -123,9 +128,9 @@ a bad metric name. Check the seam first, and do not conclude the tool is broken.
 The usable payload nests under `result`, with `insufficient_sample` in `_meta`
 alongside it.
 
-Add `analyze_efforts_delta` for the sport's effort family. Best-effort deltas
-are independent of session character, which makes them the most reliable
-progression signal on a mixed set of sessions.
+Add `analyze_efforts_delta` for the sport's effort family, over the same two
+42-day windows. Best-effort deltas are independent of session character, which
+makes them the most reliable progression signal on a mixed set of sessions.
 
 Done when: every sport present that day has both an N-back table and a baseline
 verdict, or an explicit statement of what was insufficient and why.
@@ -171,7 +176,7 @@ are in hand, with any absent field named explicitly.
 
 Carry missing data, `insufficient_sample`, `auto_lap_suspected`, `device_laps`
 intervals, profile warnings, and sports with fewer than 3 priors into the
-report's Caveats.
+report's Caveats, and name the 42-day window the comparison came from.
 
 ## Verified facts about these tools
 

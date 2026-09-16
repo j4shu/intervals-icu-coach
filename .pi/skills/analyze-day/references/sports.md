@@ -23,14 +23,14 @@ string.
 
 ## Bike: Ride, VirtualRide
 
-| Tool                             | Arguments                                                                              |
-| -------------------------------- | -------------------------------------------------------------------------------------- |
-| `get_activity_histogram`         | `metric: power_watts`                                                                  |
-| `get_activity_splits`            | default unit                                                                           |
-| `get_power_curves`               | `sport` = exact sport string, `oldest`/`newest` = 90-day window                        |
-| `get_events`                     | `oldest` **and** `newest` = the target date, `include_full: true`                      |
-| `compute_activity_segment_stats` | `stat: np`, then `stat: if` with `ftp_watts` from the profile, then `stat: decoupling` |
-| `compute_zone_energy`            | `start_date`/`end_date` = the target date, mechanical kJ by power zone                 |
+| Tool                             | Arguments                                                                               |
+| -------------------------------- | --------------------------------------------------------------------------------------- |
+| `get_activity_histogram`         | `metric: power_watts`                                                                   |
+| `get_activity_splits`            | default unit                                                                            |
+| `get_power_curves`               | `sport` = exact sport string, `oldest`/`newest` = the 42 days ending on the target date |
+| `get_events`                     | `oldest` **and** `newest` = the target date, `include_full: true`                       |
+| `compute_activity_segment_stats` | `stat: np`, then `stat: if` with `ftp_watts` from the profile, then `stat: decoupling`  |
+| `compute_zone_energy`            | `start_date`/`end_date` = the target date, mechanical kJ by power zone                  |
 
 ### Plan versus actual, bike only
 
@@ -79,12 +79,12 @@ Efforts delta: `effort_family: power`,
 
 ## Run: Run, VirtualRun
 
-| Tool                             | Arguments                                                       |
-| -------------------------------- | --------------------------------------------------------------- |
-| `get_activity_histogram`         | `metric: pace_seconds_per_km`, report as min/mi                 |
-| `get_activity_splits`            | default unit, mi                                                |
-| `get_pace_curves`                | `sport` = exact sport string, `oldest`/`newest` = 90-day window |
-| `compute_activity_segment_stats` | `stat: drift`, then `stat: decoupling`                          |
+| Tool                             | Arguments                                                                               |
+| -------------------------------- | --------------------------------------------------------------------------------------- |
+| `get_activity_histogram`         | `metric: pace_seconds_per_km`, report as min/mi                                         |
+| `get_activity_splits`            | default unit, mi                                                                        |
+| `get_pace_curves`                | `sport` = exact sport string, `oldest`/`newest` = the 42 days ending on the target date |
+| `compute_activity_segment_stats` | `stat: drift`, then `stat: decoupling`                                                  |
 
 Report pace as min/mi, the athlete's preferred unit.
 
@@ -111,11 +111,11 @@ Baseline metrics: `pace_seconds_per_mile`, `training_load`,
 
 ## Swim
 
-| Tool                     | Arguments                                                                                      |
-| ------------------------ | ---------------------------------------------------------------------------------------------- |
-| `get_activity_histogram` | `metric: pace_seconds_per_km`, convert for report                                              |
-| `get_pace_curves`        | `sport: Swim`, `oldest`/`newest` = 90-day window, `distance_meters: [50, 100, 200, 400, 1500]` |
-| `get_activity_intervals` | `include_full: true` for per-rep heart rate                                                    |
+| Tool                     | Arguments                                                                                                              |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `get_activity_histogram` | `metric: pace_seconds_per_km`, convert for report                                                                      |
+| `get_pace_curves`        | `sport: Swim`, `oldest`/`newest` = the 42 days ending on the target date, `distance_meters: [50, 100, 200, 400, 1500]` |
+| `get_activity_intervals` | `include_full: true` for per-rep heart rate                                                                            |
 
 Report all swim pace as **per 100 yards**. The pool is 25 yd and the swim
 library is in yards. `get_pace_curves` returns `pace_seconds_per_mile`; convert
