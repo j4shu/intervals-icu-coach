@@ -159,10 +159,11 @@ not the day has an activity.
    and readiness the athlete logged. Give the mean of those 7 days alongside
    HRV, resting HR, and sleep duration so the day reads against its own recent
    normal.
-2. `get_fitness` with `start_date` 7 days before the target date and `end_date`
-   the target date. That span is 8 days on purpose, because a 7-day move needs
-   the reference row from seven days back. Report CTL, ATL, TSB, and ramp on the
-   target date, plus the 7-day move in each.
+2. `get_fitness` over the 14 days ending on the target date. It returns weekly
+   buckets anchored on Mondays, so a narrower span yields a single bucket and no
+   move to read. Take the target date's CTL, ATL, TSB, and ramp from that date's
+   wellness row, and report the move between the two most recent weekly anchors,
+   which sit seven days apart.
 3. `analyze_trend` twice over the 42 days ending on the target date,
    `metric: hrv` and `metric: sleep_secs`. Report slope direction and the
    current-versus-baseline delta.
@@ -207,6 +208,12 @@ Each was checked against this athlete's data. Trust them over assumptions.
 - `compute_baseline` filters `sport` by exact string. `get_pace_curves`
   aggregates the family, so `sport: "Run"` there includes `VirtualRun`. The two
   disagree by design.
+- `analyze_trend` takes activity-row metrics (`training_load`,
+  `average_speed_mph`, `pace_seconds_per_mile`, `average_heart_rate_bpm`,
+  `moving_time_seconds`) and rejects the per-activity extended ones (`pw_hr`,
+  `if`, `aerobic_decoupling_percent`) with "requires per-activity extended
+  metrics; use get_extended_metrics or compute_baseline". Send those to
+  `compute_baseline`, which accepts them.
 - `get_activity_histogram` can return `insufficient_sample: true` with
   `reason: stream_fetch_failed` on a strength file, which carries `time` and
   `heartrate` streams but no `watts` or `cadence`. Fall back to the row's
