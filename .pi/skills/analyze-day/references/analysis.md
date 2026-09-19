@@ -117,9 +117,10 @@ outcome, not a broken call, and it is not a reason to widen the window.
 
 The two windows must not touch. `baseline_end_date` has to fall strictly earlier
 than `current_start_date`, so a baseline that ends the same day the current
-window starts is rejected. That is easy to hit by accident, because the natural
-phrasing "the 42 days ending at the target" against "the 42 days before that"
-produces exactly that shared boundary. Leave a day or more between the windows.
+window starts is rejected. That leaves the two adjacent rather than separated:
+end the baseline the day before the current window starts, and they share no
+date. Do not leave a gap between them, because a gap shifts the 42-day baseline
+off the days it is meant to cover.
 
 The rejection is also hard to read: the user-facing text is the generic "invalid
 compute_baseline arguments" and the specific reason is wrapped rather than
@@ -188,7 +189,8 @@ Each was checked against this athlete's data. Trust them over assumptions.
   returning zero items, or `tools.describe({ path: "icuvisor_<tool>" })`
   returning `tool_not_found`, means the server is disconnected, not that the
   name is wrong: call `mcp({ connect: "icuvisor" })` and retry. `mcp({})` with
-  no arguments reports the connection state and tool count.
+  no arguments, at the top level rather than nested under `args`, reports the
+  connection state and tool count.
 - Read every tool's `inputTypeScript` before its first call, in one `mcpScript`
   loop over `tools.describe({ path: "icuvisor_<tool>" })`, once the server is
   connected. The name needs the `icuvisor_` prefix even then: a bare name
