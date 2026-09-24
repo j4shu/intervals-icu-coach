@@ -1,0 +1,6 @@
+{
+  "enabledMcpjsonServers": ["icuvisor"],
+  "permissions": {
+    "allow": ["mcp__icuvisor"]
+  }
+}
