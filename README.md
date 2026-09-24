@@ -4,8 +4,8 @@ Post-workout automation for triathlon training to get an AI analysis of the day.
 
 ## Usage
 
-Run `/analyze-day [YYYY-MM-DD]` in
-[Claude Code](https://code.claude.com). The date defaults to today.
+Run `/analyze-day [YYYY-MM-DD]` in [Claude Code](https://code.claude.com). The
+date defaults to today.
 
 Optional: After an indoor ride, use `trainerday-to-garmin` to upload the
 activity to Intervals.icu before running the skill.
