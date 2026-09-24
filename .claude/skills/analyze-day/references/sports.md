@@ -115,7 +115,6 @@ Baseline metrics: `pace_seconds_per_mile`, `training_load`,
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
 | `get_activity_histogram` | `metric: pace_seconds_per_km`, convert for report                                                                      |
 | `get_pace_curves`        | `sport: Swim`, `oldest`/`newest` = the 42 days ending on the target date, `distance_meters: [50, 100, 200, 400, 1500]` |
-| `get_activity_intervals` | `include_full: true` for per-rep heart rate                                                                            |
 
 Report all swim pace as **per 100 yards**. The pool is 25 yd and the swim
 library is in yards. `get_pace_curves` returns `pace_seconds_per_mile`; convert
@@ -125,11 +124,10 @@ is 1:30/100y.
 Skip `get_activity_splits`. On a pool swim it returns one mile-long split and
 tells you nothing.
 
-Terse `get_activity_intervals` returns per-rep `distance_m`, `zone` and
-`average_step_length` (stroke length) but no per-rep heart rate. Pace is derived
-from `distance_m` and the index span, so only heart rate needs
-`include_full: true`. Rep duration in seconds is `end_index` minus `start_index`
-when `icu_median_time_delta` is 1.
+The floor's full `get_activity_intervals` call carries the rep table: per-rep
+`intervals[].full.distance`, `zone`, `average_step_length` (stroke length), and
+heart rate. Pace is derived from `distance` and the index span; rep duration in
+seconds is `end_index` minus `start_index` when `icu_median_time_delta` is 1.
 
 `interval_summary` on the activity, read from `get_activity_details`
 `include_full`, gives the set in the athlete's own notation, for example

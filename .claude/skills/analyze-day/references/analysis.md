@@ -20,7 +20,11 @@ whole ladder, then carry into the report only what it flushes out.
    `date -j -f "%Y-%m-%d" "<the date>" +"%F %A"`; otherwise run `date +"%F %A"`.
    Both print the date and weekday that go in the report header. Never compute a
    date by model arithmetic.
-2. `get_activities` for that single date.
+2. Resolve the window boundaries the same way, one call per offset:
+   `date -j -v-<N>d -f "%Y-%m-%d" "<the date>" +%F` for N = 6 (7-day start),
+   13 (14-day start), 41 (42-day start), 42 (baseline end), and 83 (baseline
+   start). Issue them as parallel calls, not a loop.
+3. `get_activities` for that single date.
 
 Done when: the day's activity list is resolved.
 
@@ -58,12 +62,12 @@ floor and then that sport's ladder from `references/sports.md`.
 
 Shared floor, every sport:
 
-| Tool                                            | Why                                                                                                                                              |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `get_activity_details` **`include_full: true`** | The terse shape omits `description` even when it is populated, and that field carries the session's intent and target.                           |
-| `get_activity_intervals`                        | Rep structure. Read `_meta.interval_source`, `_meta.auto_lap_suspected`, `_meta.interval_source_caveat` before making any claim about execution. |
-| `get_extended_metrics`                          | Decoupling, intensity factor, `pw_hr`, polarization, variability, stride/stroke length, per-interval strain.                                     |
-| `get_activity_messages`                         | The athlete's own comments, which the numbers do not carry.                                                                                      |
+| Tool                                              | Why                                                                                                                                                                                                  |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_activity_details` **`include_full: true`**   | The terse shape omits `description` even when it is populated, and that field carries the session's intent and target.                                                                               |
+| `get_activity_intervals` **`include_full: true`** | Rep structure and per-rep heart rate, which the terse shape lacks. Read `_meta.interval_source`, `_meta.auto_lap_suspected`, `_meta.interval_source_caveat` before making any claim about execution. |
+| `get_extended_metrics`                            | Decoupling, intensity factor, `pw_hr`, polarization, variability, stride/stroke length, per-interval strain.                                                                                         |
+| `get_activity_messages`                           | The athlete's own comments, which the numbers do not carry.                                                                                                                                          |
 
 Per-activity zone distribution does not come from a tool. Read it from the
 activity row's `icu_zone_times` (power) or `icu_hr_zone_times` (heart rate) and
@@ -227,14 +231,21 @@ Each was checked against this athlete's data. Trust them over assumptions.
   `threshold_pace_seconds_per_100y` in the profile.
 - Neither `include_full: true` payload truncates. `get_activity_details` stays
   small, measured at about 6 KB on a swim, and nests the extra fields under
-  `activity.full`; `get_activity_intervals` is the large one at about 150 KB, so
-  project that down to the fields in use rather than emitting it raw.
+  `activity.full`; `get_activity_intervals` is the large one at about 125-150
+  KB. That exceeds the inline result limit, so the tool result is saved to a
+  file and only its path comes back. Project `intervals[].full` from that file
+  with `jq` down to the fields in use; never read the file raw.
 - On any activity, `get_activity_intervals` `include_full: true` nests
   per-interval detail under `intervals[].full`, so heart rate is at
   `intervals[].full.average_heartrate` rather than at the top level of the
   interval object. A projection reading `average_heartrate` directly sees
-  nothing and wrongly concludes the field is absent. The terse `groups` block
-  carries a per-group average bpm and cadence and is a cheap cross-check.
+  nothing and wrongly concludes the field is absent. The same goes for
+  `average_step_length`, which is null at the top level, and for a
+  `start_index` of 0, which comes back null there; read both from `full`.
+- The `groups` block, present in both shapes, carries no heart rate. Each
+  `group_id` label is duration, average watts, and cadence, for example
+  `10s@511w98rpm` on a ride, and is a cheap cross-check on per-rep power. Per-rep
+  average watts is also `joules` divided by the rep's duration.
 - `get_pace_curves` requires `oldest` and `newest`; `sport: Swim` alone fails.
 - `get_power_curves` returns metric `_meta.units` while every other tool returns
   imperial. Watts are unit-neutral so this is harmless, but do not carry those

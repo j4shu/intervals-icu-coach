@@ -6,6 +6,7 @@ disable-model-invocation: true
 allowed-tools:
   - mcp__icuvisor__*
   - Bash(date *)
+  - Bash(jq *)
   - Write(days/*)
 ---
 
@@ -19,6 +20,10 @@ current local date.
 icuvisor tools are the `mcp__icuvisor__<tool>` MCP tools. The reference files
 live in `${CLAUDE_SKILL_DIR}/references/`; every `references/...` path in them
 resolves there.
+
+Read files with the Read tool, never `cat` or `ls`. The only shell commands are
+`date` and `jq`, one plain command per call: no `cd`, pipes, loops, or `&&`.
+Anything else stops the run for a permission prompt.
 
 ## Step 1: Analyze
 
