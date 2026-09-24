@@ -7,7 +7,8 @@ continue; that is the finding.
 Never write a file in this step; the report in `days/<date>.md` is the only file
 this skill writes.
 
-The tool names below are icuvisor names; call them exactly.
+The tool names below are icuvisor names; call them exactly, as
+`mcp__icuvisor__<name>`.
 
 Every tool named here is **mandatory** for the sports present that day. Run the
 whole ladder, then carry into the report only what it flushes out.
@@ -25,7 +26,7 @@ Done when: the day's activity list is resolved.
 
 ## Step 2: Read the sport ladders
 
-Read `.pi/skills/analyze-day/references/sports.md` in full, now, before
+Read `references/sports.md` in full, now, before
 analyzing any activity. It holds the per-sport tool ladders, unit rules, and
 interpretation thresholds that Step 4 depends on.
 
@@ -185,20 +186,11 @@ report's Caveats, and name the 42-day window the comparison came from.
 
 Each was checked against this athlete's data. Trust them over assumptions.
 
-- The server must be connected before any tool name resolves. `tools.search`
-  returning zero items, or `tools.describe({ path: "icuvisor_<tool>" })`
-  returning `tool_not_found`, means the server is disconnected, not that the
-  name is wrong: call `mcp({ connect: "icuvisor" })` and retry. `mcp({})` with
-  no arguments, at the top level rather than nested under `args`, reports the
-  connection state and tool count.
-- Read every tool's `inputTypeScript` before its first call, in one `mcpScript`
-  loop over `tools.describe({ path: "icuvisor_<tool>" })`, once the server is
-  connected. The name needs the `icuvisor_` prefix even then: a bare name
-  returns `tool_not_found` and a bare `tools.call` fails, and the mcp tool's
-  `describe` needs the prefix too. The argument names are not guessable:
-  `get_events` wants `oldest` **and** `newest`, `compute_zone_energy` and
-  `compute_zone_time` want `start_date`/`end_date`, and
-  `compute_activity_segment_stats` wants a time or distance range on every call.
+- The argument names are not guessable; read each tool's schema before its
+  first call. `get_events` wants `oldest` **and** `newest`,
+  `compute_zone_energy` and `compute_zone_time` want `start_date`/`end_date`,
+  and `compute_activity_segment_stats` wants a time or distance range on every
+  call.
 - `compute_zone_time` takes dates, not an `activity_id`, and it sits on the
   upstream weekly bucket. A single-day range returns `status: unavailable` with
   `insufficient_reason: missing_precomputed_zone_times` and `n: 0` for every
