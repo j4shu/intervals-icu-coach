@@ -7,7 +7,8 @@ allowed-tools:
   - mcp__icuvisor__*
   - Bash(date *)
   - Bash(jq *)
-  - Write(days/*)
+  - Edit(days/*)
+  - Edit(~/Library/CloudStorage/Dropbox/intervals-icu-coach-days/*)
 ---
 
 # Analyze the day's workouts
@@ -47,8 +48,6 @@ Done when: the file exists and follows the template.
 
 ## Output
 
-Your final chat message is not the report. It is the file you wrote:
-
-```
-Wrote days/<date from Step 1>.md
-```
+A short summary of up to 5 bullets, drawn from the report and adding nothing it
+lacks: the verdict, the key numbers behind it, wellness, and the next action.
+End with the file you wrote.
