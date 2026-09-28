@@ -4,8 +4,8 @@ Run this ladder for the target day and retain only what `references/report.md`
 needs. When a tool returns nothing useful, say so plainly in the report and
 continue; that is the finding.
 
-Never write a file in this step; the report in `days/<date>.md` is the only file
-this skill writes.
+Never write a file in this step; the report in `plans/<date>.md` is the only
+file this skill writes.
 
 The tool names below are icuvisor names; call them exactly, as
 `mcp__icuvisor__<name>`.
@@ -20,13 +20,16 @@ whole ladder, then carry into the report only what it flushes out.
    `date -j -f "%Y-%m-%d" "<the date>" +"%F %A"`; otherwise run `date +"%F %A"`.
    Both print the date and weekday that go in the report header. Never compute a
    date by model arithmetic.
-2. Resolve the window boundaries the same way, one call per offset:
+2. Read `plans/plan.md` in full; it is always the current plan. If it does not
+   exist, stop the run here: make no icuvisor call, write no file, and tell the
+   user there is no `plans/plan.md`.
+3. Resolve the window boundaries the same way, one call per offset:
    `date -j -v-<N>d -f "%Y-%m-%d" "<the date>" +%F` for N = 6 (7-day start),
    13 (14-day start), 41 (42-day start), 42 (baseline end), and 83 (baseline
    start). Issue them as parallel calls, not a loop.
-3. `get_activities` for that single date.
+4. `get_activities` for that single date.
 
-Done when: the day's activity list is resolved.
+Done when: the plan is read and the day's activity list is resolved.
 
 ## Step 2: Read the sport ladders
 
@@ -181,6 +184,31 @@ value from the trend line.
 
 Done when: the target date's wellness row, the fitness numbers, and both trends
 are in hand, with any absent field named explicitly.
+
+## Step 8: Plan
+
+Place the day in the plan read in Step 1. Never write to `plan.md`.
+
+1. The block is Monday-to-Sunday weeks, as many as `plan.md` lays out: Week 1
+   starts on a Monday and the last week ends on a Sunday. Take Week 1's Monday
+   from `plan.md`; when it states none, skip the week number, say the week is
+   unknown, and match the day against the plan's progression by its sessions
+   alone. Resolve the target's week start with
+   `date -j -v-mon -f "%Y-%m-%d" "<the date>" +%F`, and each later week's Monday
+   with `date -j -v+<N>d -f "%Y-%m-%d" "<week 1 Monday>" +%F` for N = 7, 14, and
+   on per week, as parallel calls. The target's week is the one whose Monday
+   matches.
+2. Take what `plan.md` prescribes for that week: its key session, optional
+   sessions, and any trims.
+3. Tally the week to date, from the target's week start through the target date,
+   from the Step 3 page: which prescribed items are done, in what form, and which
+   remain. Match on session character from `description` or name and on actual
+   watts, not on the label alone.
+4. Check the week against the plan's own rules, such as no back-to-back hard
+   days, and name any the week broke.
+
+Done when: the block week, its prescription, the week-to-date tally, and any
+broken rule are in hand.
 
 Carry missing data, `insufficient_sample`, `auto_lap_suspected`, `device_laps`
 intervals, profile warnings, and sports with fewer than 3 priors into the

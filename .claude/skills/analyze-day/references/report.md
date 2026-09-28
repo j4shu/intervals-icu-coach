@@ -1,6 +1,6 @@
 # Report template
 
-The shape of `days/<date>.md`. Fill this skeleton; do not improvise a different
+The shape of `plans/<date>.md`. Fill this skeleton; do not improvise a different
 flow.
 
 Nothing here names a sport. Per-sport fields come from `references/sports.md`.
@@ -48,9 +48,16 @@ Nothing here names a sport. Per-sport fields come from `references/sports.md`.
 - **<Sport> "<name>":** <duration>, load <n>.
   - <what the file carries and what it does not.>
 
+## Plan
+
+Week <n> of <weeks in plan.md> (<the week's label from plan.md>): <what the week prescribes>.
+
+- **<label>:** <a prescribed item and whether it is done, in what form, or still open.>
+- **<label>:** <a rule from plan.md the week broke, or the next item.>
+
 ## Next
 
-<One specific next action.>
+<The next item plan.md calls for, adjusted for today's session, wellness, and form.>
 ```
 
 ## Rules
@@ -65,8 +72,9 @@ Nothing here names a sport. Per-sport fields come from `references/sports.md`.
   `## Sessions` heading carrying `None`.
 - The fact line's core is `<duration> | load <n>`; everything after it is the
   tail the sport's block declares. It stays a fact line, not a bullet.
-- Verdict, the session's intent and plan-versus-actual, and Next are prose.
-  Everything else listed in the skeleton as a bullet is a bullet.
+- Verdict, the session's intent and plan-versus-actual, the Plan line, and Next
+  are prose. Everything else listed in the skeleton as a bullet is a bullet. When
+  `plan.md` states no dates, the Plan line says so in place of the week number.
 - A bullet is `- **<label>:** <claim>`. The label is whatever names that
   bullet's point; there is no fixed vocabulary. The claim is full sentences,
   since the hedges matter.
@@ -79,7 +87,7 @@ Nothing here names a sport. Per-sport fields come from `references/sports.md`.
   seeing; reps that landed on top of each other are one bullet, not a table.
 - Caps: verdict 3 sentences; wellness the table plus 2 parent bullets, 5 bullets
   total; each session 1 table plus 5 interpretation bullets; `**Caveats**` 4
-  bullets; Other Workouts 1 parent plus 2 children per session; Next 2
-  sentences.
+  bullets; Other Workouts 1 parent plus 2 children per session; Plan the line
+  plus 3 bullets; Next 2 sentences.
 - The file holds the report and nothing else: no preamble, no sign-off, no
   mention of having written it. No banners, no emojis, no em dashes.

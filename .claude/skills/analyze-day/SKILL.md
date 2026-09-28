@@ -7,8 +7,8 @@ allowed-tools:
   - mcp__icuvisor__*
   - Bash(date *)
   - Bash(jq *)
-  - Edit(days/*)
-  - Edit(~/Library/CloudStorage/Dropbox/intervals-icu-coach-days/*)
+  - Edit(plans/*.md)
+  - Edit(~/Library/CloudStorage/Dropbox/intervals-icu-coach-plans/*.md)
 ---
 
 # Analyze the day's workouts
@@ -33,6 +33,9 @@ exactly, yourself. As you go, retain only what the report template needs; do not
 narrate raw tool dumps. Read-only on intervals.icu, and do not write a file in
 this step.
 
+If the ladder stopped because `plans/plan.md` is missing, write no file and skip
+Step 2; the Output is the stop message alone.
+
 Done when: every step of the ladder has run and its findings are in hand.
 
 ## Step 2: Write the report
@@ -41,7 +44,7 @@ Read `${CLAUDE_SKILL_DIR}/references/report.md` in full and fill its skeleton.
 It owns the report's shape: the sections, their order, the session headings and
 fact lines, and the length caps. Do not improvise a different flow.
 
-Write the filled template to `days/<date>.md`, naming it with the date Step 1
+Write the filled template to `plans/<date>.md`, naming it with the date Step 1
 resolved and overwriting any existing report for that date.
 
 Done when: the file exists and follows the template.
